@@ -7,8 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Container from '@mui/material/Container';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Box from '@mui/system/Box';
+import Checkbox from '@mui/material/Checkbox';
 
 function Copyright(props) {
   return (
@@ -25,37 +24,12 @@ function Copyright(props) {
 
 
 
+
+
+// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function App() {
-
-  const [upload_image, setImage] = React.useState("https://t3.ftcdn.net/jpg/02/18/21/86/360_F_218218632_jF6XAkcrlBjv1mAg9Ow0UBMLBaJrhygH.jpg");
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setImage(URL.createObjectURL(file));
-
-    fetch('http://localhost:5000/upload', {
-      method: 'POST',
-      body: formData
-    })
-      .then(response => response.json())
-      .then(data => {
-        // if (data.status === 'success') {
-        
-        setImage(URL.createObjectURL(file)); // Set the image URL to display the uploaded image
-        // } else {
-        //   console.error('Upload failed:', data.message);
-        // }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
-
   return (
     <ThemeProvider theme={defaultTheme}>
 
@@ -67,7 +41,7 @@ export default function App() {
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
           <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            DocAssist
+            Company name
           </Typography>
           <nav>
             <Link
@@ -76,7 +50,7 @@ export default function App() {
               href="#"
               sx={{ my: 1, mx: 1.5 }}
             >
-              Conditions
+              Features
             </Link>
             <Link
               variant="button"
@@ -84,7 +58,7 @@ export default function App() {
               href="#"
               sx={{ my: 1, mx: 1.5 }}
             >
-              Connect With a Doctor
+              Enterprise
             </Link>
             <Link
               variant="button"
@@ -92,7 +66,7 @@ export default function App() {
               href="#"
               sx={{ my: 1, mx: 1.5 }}
             >
-              More
+              Support
             </Link>
           </nav>
           <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
@@ -103,34 +77,22 @@ export default function App() {
 
       {/* Hero unit */}
       <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={6} container direction="column">
-              <Grid item xs={6} container justifyContent="center">
-                <Box
-                  component="img"
-                  sx={{
-                    height: 233,
-                    width: 350,
-                    maxHeight: { xs: 233, md: 167 },
-                    maxWidth: { xs: 350, md: 250 },
-                  }}
-                  alt="Uploaded Image"
-                  src={upload_image}
-                />
-                <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
-                  Upload file
-                  <input type="file" style={{ display: 'none' }} onChange={handleFileChange} />
-                </Button>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={6} container direction="column">
+            {[...Array(5)].map((_, index) => (
+              <Grid key={index} container item alignItems="center">
+                <Checkbox color="primary" />
+                <Typography variant="body1">Checkbox {index + 1}</Typography>
+                <Typography variant="body1">Default Text</Typography>
               </Grid>
-            </Grid>
-            <Grid item xs={6} container justifyContent="center">
-              <Button variant="contained" color="primary">
-                Button 2
-              </Button>
-            </Grid>
+            ))}
           </Grid>
-        </Container>
+          <Grid item xs={6} container justifyContent="center">
+            <Button variant="contained" color="primary">
+              Button 2
+            </Button>
+          </Grid>
+        </Grid>
       </Container>
       {/* End hero unit */}
 
