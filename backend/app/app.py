@@ -26,7 +26,7 @@ def home():
 
         print("here\n")
 
-        return jsonify({'message': 'File uploaded successfully: ' + str(pred)}), 200
+        return jsonify({"message": "Percentage: " + str(pred)}), 200
 
     except Exception as e:
         print(str(e))
