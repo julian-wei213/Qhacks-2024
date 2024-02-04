@@ -1,154 +1,95 @@
-import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Container from '@mui/material/Container';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Box from '@mui/system/Box';
+import React, {Component} from "react" 
+import Axios from "axios" 
+import './Drip.css'
+import axios from "axios"
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+class App extends Component {
 
+  state = {
+    seletedFile: null
+  }
 
-
-const defaultTheme = createTheme();
-
-export default function App() {
-
-  const [upload_image, setImage] = React.useState("https://t3.ftcdn.net/jpg/02/18/21/86/360_F_218218632_jF6XAkcrlBjv1mAg9Ow0UBMLBaJrhygH.jpg");
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    setImage(URL.createObjectURL(file));
-
-    fetch('http://localhost:5000/upload', {
-      method: 'POST',
-      body: formData
+  fileSelectedHandler = event => {
+    this.setState({
+      selectedFile: event.target.files[0]
     })
-      .then(response => response.json())
-      .then(data => {
-        // if (data.status === 'success') {
-        
-        setImage(URL.createObjectURL(file)); // Set the image URL to display the uploaded image
-        // } else {
-        //   console.error('Upload failed:', data.message);
-        // }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+  }
+
+  fileUploadHandler = () => {
+    const formData = new FormData();
+ 
+    // Update the formData object
+    formData.append(
+        'file',
+        this.state.selectedFile
+    );
+
+    // Details of the uploaded file
+    console.log(this.state.selectedFile);
+
+    // Request made to the backend api
+    // Send formData object
+    axios.post(" http://127.0.0.1:5000/home", formData)
+    .then(response => {
+      console.log('File uploaded successfully: ', response.data);
+    })
+    .catch(error => {
+        console.error('Error uploading file:', error);
+    });
+  }
+
+
+     // File content to be displayed after
+    // file upload is complete
+    fileData = () => {
+      if (this.state.selectedFile) {
+          return (
+              <div>
+                  <h2>File Details:</h2>
+                  <p>
+                      File Name:{" "}
+                      {this.state.selectedFile.name}
+                  </p>
+
+                  <p>
+                      File Type:{" "}
+                      {this.state.selectedFile.type}
+                  </p>
+
+                  <p>
+                      Last Modified:{" "}
+                      {this.state.selectedFile.lastModifiedDate.toDateString()}
+                  </p>
+              </div>
+          );
+      } else {
+          return (
+              <div>
+                  <br />
+                  <h4>
+                      Choose before Pressing the Upload
+                      button
+                  </h4>
+              </div>
+          );
+      }
   };
 
-  return (
-    <ThemeProvider theme={defaultTheme}>
-
-      <AppBar
-        position="static"
-        color="default"
-        elevation={0}
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
-      >
-        <Toolbar sx={{ flexWrap: 'wrap' }}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            DocAssist
-          </Typography>
-          <nav>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Conditions
-            </Link>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Connect With a Doctor
-            </Link>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="#"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              More
-            </Link>
-          </nav>
-          <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-            Login
-          </Button>
-        </Toolbar>
-      </AppBar>
-
-      {/* Hero unit */}
-      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-        <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={6} container direction="column">
-              <Grid item xs={6} container justifyContent="center">
-                <Box
-                  component="img"
-                  sx={{
-                    height: 233,
-                    width: 350,
-                    maxHeight: { xs: 233, md: 167 },
-                    maxWidth: { xs: 350, md: 250 },
-                  }}
-                  alt="Uploaded Image"
-                  src={upload_image}
-                />
-                <Button component="label" variant="contained" startIcon={<CloudUploadIcon />}>
-                  Upload file
-                  <input type="file" style={{ display: 'none' }} onChange={handleFileChange} />
-                </Button>
-              </Grid>
-            </Grid>
-            <Grid item xs={6} container justifyContent="center">
-              <Button variant="contained" color="primary">
-                Button 2
-              </Button>
-            </Grid>
-          </Grid>
-        </Container>
-      </Container>
-      {/* End hero unit */}
-
-
-
-      {/* Footer */}
-      <Container
-        maxWidth="md"
-        component="footer"
-        sx={{
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-          mt: 8,
-          py: [3, 6],
-        }}
-      >
-        <Copyright sx={{ mt: 5 }} />
-      </Container>
-      {/* End footer */}
-    </ThemeProvider>
-  );
+  render() {
+      return (
+          <div className="file-upload-container">
+              <h1>Doc Assist</h1>
+              <div className="result-section">
+              <form className="file-upload-form">
+                <label htmlFor="fileInput">Choose a file:</label>
+                <input type="file" onChange={this.fileSelectedHandler} />
+                <button type="button" onClick={this.fileUploadHandler}>Upload</button>
+              </form>
+              </div >
+              {this.fileData()}
+          </div >
+      );
+  }
 }
+
+export default App;
