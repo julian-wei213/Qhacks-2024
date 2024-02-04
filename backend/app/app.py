@@ -6,7 +6,7 @@ import pickle
 app = Flask(__name__)
 
 #Load the trained model from a pickle file
-model = pickle.load(open('models/model.pkl', 'rb'))
+#model = pickle.load(open('models/model.pkl', 'rb'))
 
 
 
@@ -15,16 +15,20 @@ def home():
     return render_template('.my-app\src\App.js')
 
 
-@app.route('predict', method=['POST'])
-def cnn_predict():
-    int_features = [float(x) for x in request.form.values()]
-    features = [np.array(int_features)]
-    prediction = model.predict(features)
+# @app.route('predict', method=['POST'])
+# def cnn_predict():
+#     int_features = [float(x) for x in request.form.values()]
+#     features = [np.array(int_features)]
+#     prediction = model.predict(features)
 
-    output = prediction
+#     output = prediction
     
-    return render_template()
+#     return render_template()
+
+@app.route("/test")
+def test():
+    return "this is a test"
 
 
 if __name__ == '__main__':
-    app.run
+    app.run(debug=True)
