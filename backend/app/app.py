@@ -1,45 +1,37 @@
-from flask import Flask, request, jsonify
-from werkzeug.utils import secure_filename
-import os
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from training import retrain
 
+
+# Create an app object of class Flask
 app = Flask(__name__)
+CORS(app)
 
-UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-@app.route('/')
+@app.route('/home', methods=['POST'])
 def home():
-    return "Hello, World!"  # You can change this to render your React app if needed
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        resp = jsonify({"message": 'No file part in the request', "status": 'failed'})
-        resp.status_code = 400
-        return resp
+        file = request.files['file']
 
-    file = request.files['file']
-    if file.filename == '':
-        resp = jsonify({"message": 'No selected file', "status": 'failed'})
-        resp.status_code = 400
-        return resp
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        resp = jsonify({"message": 'File successfully uploaded', "status": 'success'})
-        resp.status_code = 201
-        return resp
-    else:
-        resp = jsonify({"message": 'File type is not allowed', "status": 'failed'})
-        resp.status_code = 400
-        return resp
+        # Save the file to a desired location
+        file.save(file.filename)
+
+        pred = retrain(file)
+
+        print("here\n")
+
+        return jsonify({'message': 'File uploaded successfully: ' + str(pred)}), 200
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({'error': 'Internal Server Error'}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
