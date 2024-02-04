@@ -24,24 +24,6 @@ function Copyright(props) {
 }
 
 
-// Function to handle login button click
-function handleLogin() {
-  // Make API request to Flask backend
-  fetch('/api/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ /* Add any necessary data for login */ })
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log(data); // Handle the response data
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-}
 
 
 
@@ -49,6 +31,22 @@ function handleLogin() {
 const defaultTheme = createTheme();
 
 export default function App() {
+
+  const [value, setValue] = React.useState({});
+
+  React.useEffect(() => {
+    fetch("/test").then(
+    res => res.json()
+  ).then (
+    value => {
+      setValue(value)
+      console.log(value)
+    }
+    )
+  }, [])
+  
+
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
